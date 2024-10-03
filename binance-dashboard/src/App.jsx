@@ -5,7 +5,8 @@ import { Chart as ChartJS } from "chart.js/auto"; // Import necessary chart.js c
 const App = () => {
   const [symbol, setSymbol] = useState("ethusdt");
   const [candlestickData, setCandlestickData] = useState([]);
-  const [counter, setCounter] = useState(0);
+  // const [counter, setCounter] = useState(0);
+
 
   // Function to handle symbol change from dropdown
   const handleSymbolChange = (event) => {
@@ -20,14 +21,11 @@ const App = () => {
     //   ws.close();
     // }
     const ws = new WebSocket(
-      `wss://stream.binance.com:9443/ws/${symbol}@kline_1m`
-    );
-
+    `wss://stream.binance.com:9443/ws/${symbol}@kline_1m`
+  );
     ws.onmessage = (event) => {
-      // console.log(counter);
-      // console.log("run/")
       const data = JSON.parse(event.data);
-      console.log(data, "data");
+      console.log(data);
       if (data.k) {
         const { t, o, h, l, c } = data.k; // Extract candlestick data
         setCandlestickData((prev) => [
@@ -41,14 +39,14 @@ const App = () => {
           },
         ]);
       }
+      // setCounter((prev) => prev + 1);
 
-      setCounter((prev) => prev + 1);
       // ws.close();
     };
 
     // Cleanup function to close WebSocket on component unmount or symbol change
     return () => {
-      // ws.close();
+      ws.close();
     };
   }, [symbol]); // Re-run the effect when the symbol changes
 
