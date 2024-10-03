@@ -5,20 +5,29 @@ import { Chart as ChartJS } from "chart.js/auto"; // Import necessary chart.js c
 const App = () => {
   const [symbol, setSymbol] = useState("ethusdt");
   const [candlestickData, setCandlestickData] = useState([]);
+  const [counter, setCounter] = useState(0);
 
   // Function to handle symbol change from dropdown
   const handleSymbolChange = (event) => {
     setSymbol(event.target.value);
   };
 
+  // console.log(counter);
+
   // Effect to manage WebSocket connection
   useEffect(() => {
+    // if (counter > 5) {
+    //   ws.close();
+    // }
     const ws = new WebSocket(
       `wss://stream.binance.com:9443/ws/${symbol}@kline_1m`
     );
 
     ws.onmessage = (event) => {
+      // console.log(counter);
+      // console.log("run/")
       const data = JSON.parse(event.data);
+      console.log(data, "data");
       if (data.k) {
         const { t, o, h, l, c } = data.k; // Extract candlestick data
         setCandlestickData((prev) => [
@@ -32,6 +41,9 @@ const App = () => {
           },
         ]);
       }
+
+      setCounter((prev) => prev + 1);
+      // ws.close();
     };
 
     // Cleanup function to close WebSocket on component unmount or symbol change
@@ -68,7 +80,7 @@ const App = () => {
       </select>
 
       {/* Line chart to display candlestick data */}
-      <Line data={chartData}/>
+      <Line className="line-chart" data={chartData} />
     </div>
   );
 };
