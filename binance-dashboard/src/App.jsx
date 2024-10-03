@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
-import { Line } from 'react-chartjs-2';
-// import { Chart as ChartJS } from 'chart.js/auto'; // Import necessary chart.js components
+import { useEffect, useState } from "react";
+import { Line } from "react-chartjs-2";
+import { Chart as ChartJS } from "chart.js/auto"; // Import necessary chart.js components
 
 const App = () => {
-  const [symbol, setSymbol] = useState('ethusdt');
+  const [symbol, setSymbol] = useState("ethusdt");
   const [candlestickData, setCandlestickData] = useState([]);
 
   // Function to handle symbol change from dropdown
@@ -13,7 +13,9 @@ const App = () => {
 
   // Effect to manage WebSocket connection
   useEffect(() => {
-    const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol}@kline_1m`);
+    const ws = new WebSocket(
+      `wss://stream.binance.com:9443/ws/${symbol}@kline_1m`
+    );
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
@@ -21,14 +23,20 @@ const App = () => {
         const { t, o, h, l, c } = data.k; // Extract candlestick data
         setCandlestickData((prev) => [
           ...prev,
-          { time: new Date(t).toLocaleTimeString(), open: o, high: h, low: l, close: c },
+          {
+            time: new Date(t).toLocaleTimeString(),
+            open: o,
+            high: h,
+            low: l,
+            close: c,
+          },
         ]);
       }
     };
 
     // Cleanup function to close WebSocket on component unmount or symbol change
     return () => {
-      ws.close();
+      // ws.close();
     };
   }, [symbol]); // Re-run the effect when the symbol changes
 
@@ -39,12 +47,14 @@ const App = () => {
       {
         label: `${symbol.toUpperCase()} Candlestick Data`,
         data: candlestickData.map((data) => data.close),
-        borderColor: 'rgba(75, 192, 192, 1)',
+        borderColor: "rgba(75, 192, 192, 1)",
         fill: false,
         borderWidth: 1,
       },
     ],
   };
+
+  console.log(chartData);
 
   return (
     <div>
@@ -58,7 +68,7 @@ const App = () => {
       </select>
 
       {/* Line chart to display candlestick data */}
-      {/* <Line data={chartData} /> */}
+      <Line data={chartData}/>
     </div>
   );
 };
