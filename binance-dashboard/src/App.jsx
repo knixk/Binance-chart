@@ -1,68 +1,82 @@
 import React, { useEffect, useState } from 'react';
-import { Chart } from 'react-chartjs-2';
-import 'chartjs-chart-financial'; // Import the financial chart plugin
+import { Chart, registerables } from 'chart.js';
+import { Chart as ReactChart } from 'react-chartjs-2';
+import 'chartjs-chart-financial';
+
+// Register financial chart for candlestick
+import { CandlestickController, CandlestickElement } from 'chartjs-chart-financial';
+import 'chartjs-adapter-date-fns';
+
+Chart.register(...registerables);
+Chart.register(CandlestickElement, CandlestickController)
 
 const App = () => {
   const [symbol, setSymbol] = useState('ethusdt');
-  const [candlestickData, setCandlestickData] = useState([]);
+  const [interval, setInterval] = useState('1m');
+  const [candlestickData, setCandlestickData] = useState({});
 
-  // Function to handle symbol change from dropdown
-  const handleSymbolChange = (event) => {
-    setSymbol(event.target.value);
-    setCandlestickData([]); // Reset data when switching symbols
-  };
-
-  // Effect to manage WebSocket connection
+  // Fetch historical data from Binance WebSocket
   useEffect(() => {
-    const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol}@kline_1m`);
+    const storedData = localStorage.getItem(symbol);
+    if (storedData) {
+      setCandlestickData(JSON.parse(storedData));
+    }
+
+    const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol}@kline_${interval}`);
 
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      if (data.k) {
-        const { t, o, h, l, c } = data.k; // Extract candlestick data
-        setCandlestickData((prev) => [
-          ...prev,
-          { x: new Date(t), o: parseFloat(o), h: parseFloat(h), l: parseFloat(l), c: parseFloat(c) },
-        ]);
-      }
-
       console.log(data)
+      if (data.k) {
+        const { t, o, h, l, c } = data.k;
+        const newCandle = {
+          x: new Date(t),
+          o: parseFloat(o),
+          h: parseFloat(h),
+          l: parseFloat(l),
+          c: parseFloat(c),
+        };
+
+        setCandlestickData((prevData) => {
+          const updatedData = prevData[symbol] ? [...prevData[symbol], newCandle] : [newCandle];
+          localStorage.setItem(symbol, JSON.stringify(updatedData));
+          return { ...prevData, [symbol]: updatedData };
+        });
+      }
     };
 
-    // Cleanup function to close WebSocket on component unmount or symbol change
-    return () => {
-      // ws.close();
-    };
-  }, [symbol]);
+    return () => ws.close();
+  }, [symbol, interval]);
 
-  // Prepare data for the candlestick chart
+  // Handle symbol change
+  const handleSymbolChange = (e) => {
+    setSymbol(e.target.value);
+  };
+
+  // Handle interval change
+  const handleIntervalChange = (e) => {
+    setInterval(e.target.value);
+  };
+
+  // Chart data and options
   const chartData = {
     datasets: [
       {
         label: `${symbol.toUpperCase()} Candlestick Data`,
-        data: candlestickData,
+        data: candlestickData[symbol] || [],
         type: 'candlestick',
-        color: {
-          up: 'rgba(0, 255, 0, 0.5)',
-          down: 'rgba(255, 0, 0, 0.5)',
-          unchanged: 'rgba(0, 0, 255, 0.5)',
-        },
+        borderColor: '#000',
+        backgroundColor: 'rgba(0, 0, 0, 0.1)',
       },
     ],
   };
 
   const chartOptions = {
-    responsive: true,
     scales: {
       x: {
         type: 'time',
         time: {
           unit: 'minute',
-        },
-        ticks: {
-          source: 'auto',
-          maxRotation: 0,
-          autoSkip: true,
         },
       },
       y: {
@@ -73,17 +87,26 @@ const App = () => {
 
   return (
     <div>
-      <h1>Binance Market Data</h1>
+      <h1>Binance Market Data - Candlestick Chart</h1>
 
       {/* Dropdown to select cryptocurrency */}
-      <select onChange={handleSymbolChange} value={symbol}>
+      <select value={symbol} onChange={handleSymbolChange}>
         <option value="ethusdt">ETH/USDT</option>
         <option value="bnbusdt">BNB/USDT</option>
         <option value="dotusdt">DOT/USDT</option>
       </select>
 
-      {/* Candlestick chart */}
-      {/* {<Chart type="candlestick" data={chartData} options={chartOptions} />} */}
+      {/* Dropdown to select interval */}
+      <select value={interval} onChange={handleIntervalChange}>
+        <option value="1m">1 Minute</option>
+        <option value="3m">3 Minutes</option>
+        <option value="5m">5 Minutes</option>
+      </select>
+
+      {/* Candlestick Chart */}
+      {candlestickData[symbol] && candlestickData[symbol].length > 0 && (
+        <ReactChart type="candlestick" data={chartData} options={chartOptions} />
+      )}
     </div>
   );
 };
