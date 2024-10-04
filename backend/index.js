@@ -25,7 +25,6 @@ sockserver.on('connection', ws => {
     }
    })
 
-
 // app.listen(port, () => {
 //     console.log('listening on server ', port)
 // })
@@ -41,9 +40,7 @@ webSocket = async () => {
 		let instrumentName = data.k.s;
 		let time = moment(data.k.t).format('YYYY-MM-DD HH:mm:ss');
 		let closeValue = data.k.c
-
 		console.log(time + " - " + instrumentName + " - " + closeValue);
-
 	});
 }
 

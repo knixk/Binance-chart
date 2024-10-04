@@ -1,70 +1,75 @@
-import { useEffect, useState } from "react";
-import { Line } from "react-chartjs-2";
-import { Chart as ChartJS } from "chart.js/auto"; // Import necessary chart.js components
+import React, { useEffect, useState } from 'react';
+import { Chart } from 'react-chartjs-2';
+import 'chartjs-chart-financial'; // Import the financial chart plugin
 
 const App = () => {
-  const [symbol, setSymbol] = useState("ethusdt");
+  const [symbol, setSymbol] = useState('ethusdt');
   const [candlestickData, setCandlestickData] = useState([]);
-  // const [counter, setCounter] = useState(0);
-
 
   // Function to handle symbol change from dropdown
   const handleSymbolChange = (event) => {
     setSymbol(event.target.value);
+    setCandlestickData([]); // Reset data when switching symbols
   };
-
-  // console.log(counter);
 
   // Effect to manage WebSocket connection
   useEffect(() => {
-    // if (counter > 5) {
-    //   ws.close();
-    // }
-    const ws = new WebSocket(
-    `wss://stream.binance.com:9443/ws/${symbol}@kline_1m`
-  );
+    const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol}@kline_1m`);
+
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      console.log(data);
       if (data.k) {
         const { t, o, h, l, c } = data.k; // Extract candlestick data
         setCandlestickData((prev) => [
           ...prev,
-          {
-            time: new Date(t).toLocaleTimeString(),
-            open: o,
-            high: h,
-            low: l,
-            close: c,
-          },
+          { x: new Date(t), o: parseFloat(o), h: parseFloat(h), l: parseFloat(l), c: parseFloat(c) },
         ]);
       }
-      // setCounter((prev) => prev + 1);
 
-      // ws.close();
+      console.log(data)
     };
 
     // Cleanup function to close WebSocket on component unmount or symbol change
     return () => {
-      ws.close();
+      // ws.close();
     };
-  }, [symbol]); // Re-run the effect when the symbol changes
+  }, [symbol]);
 
-  // Prepare data for the chart
+  // Prepare data for the candlestick chart
   const chartData = {
-    labels: candlestickData.map((data) => data.time),
     datasets: [
       {
         label: `${symbol.toUpperCase()} Candlestick Data`,
-        data: candlestickData.map((data) => data.close),
-        borderColor: "rgba(75, 192, 192, 1)",
-        fill: false,
-        borderWidth: 1,
+        data: candlestickData,
+        type: 'candlestick',
+        color: {
+          up: 'rgba(0, 255, 0, 0.5)',
+          down: 'rgba(255, 0, 0, 0.5)',
+          unchanged: 'rgba(0, 0, 255, 0.5)',
+        },
       },
     ],
   };
 
-  console.log(chartData);
+  const chartOptions = {
+    responsive: true,
+    scales: {
+      x: {
+        type: 'time',
+        time: {
+          unit: 'minute',
+        },
+        ticks: {
+          source: 'auto',
+          maxRotation: 0,
+          autoSkip: true,
+        },
+      },
+      y: {
+        beginAtZero: false,
+      },
+    },
+  };
 
   return (
     <div>
@@ -77,8 +82,8 @@ const App = () => {
         <option value="dotusdt">DOT/USDT</option>
       </select>
 
-      {/* Line chart to display candlestick data */}
-      <Line className="line-chart" data={chartData} />
+      {/* Candlestick chart */}
+      {/* {<Chart type="candlestick" data={chartData} options={chartOptions} />} */}
     </div>
   );
 };

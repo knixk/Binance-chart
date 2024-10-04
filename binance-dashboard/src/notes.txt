@@ -1,0 +1,12 @@
+if you can't do it, then you don't deserve it. 
+
+Complete it, struggle with it. 
+
+Just spend some time that's it. 
+
+Nothing more. 
+
+1. Create candlestick chart
+2. Create cached data
+3. How can i persist different data for different charts
+4. Use your brain.
