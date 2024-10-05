@@ -59,8 +59,6 @@ export default function App() {
       setCandlestickData(JSON.parse(storedData));
     }
 
-    let count = 0;
-
     // Create a new WebSocket connection based on selected symbol and interval
     const ws = new WebSocket(
       `wss://stream.binance.com:9443/ws/${selectedSymbol.toLowerCase()}@kline_${selectedInterval}`
@@ -73,14 +71,8 @@ export default function App() {
     ws.onmessage = (event) => {
       const data = JSON.parse(event.data);
 
-      if (count > 5) {
-        ws.close();
-      }
-
       if (data.k) {
         const { o, h, l, c } = data.k; // Extract open, high, low, close
-        count++;
-
         const newCandle = [
           // getCurrentTimeString(),
           getCurrentTimeString(),
@@ -123,7 +115,10 @@ export default function App() {
 
   return (
     <div className="app__container">
-      <h1 className="title">Real-Time <span className="title__span">{selectedSymbol}</span> Candlestick Chart</h1>
+      <h1 className="title">
+        Real-Time <span className="title__span">{selectedSymbol}</span>{" "}
+        Candlestick Chart
+      </h1>
       <small>(by kanishk shrivastava: shrivastavakanishk3@gmail.com)</small>
       <hr className="divider" />
 
@@ -192,7 +187,9 @@ export default function App() {
       {candlestickData &&
         candlestickData[selectedSymbol] &&
         candlestickData[selectedSymbol][selectedInterval] &&
-        candlestickData[selectedSymbol][selectedInterval].length < 2 && <div className="loader"></div>}
+        candlestickData[selectedSymbol][selectedInterval].length < 2 && (
+          <div className="loader"></div>
+        )}
 
       {/* (
         <div className="loader"></div>

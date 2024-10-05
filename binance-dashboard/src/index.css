@@ -19,6 +19,8 @@ body {
   gap: 1.2rem;
   /* align-items: center; */
   margin: 1rem;
+  animation: fade-in 2s;
+  animation-delay: 1s;
 }
 
 .title__span {
@@ -29,10 +31,14 @@ body {
   /* border-bottom: 4px solid plum; */
 }
 
+
 .interval__dropdown,
 .symbol__dropdown {
   width: 200px;
   padding: 0.5rem 0.5rem;
+  border-radius: 2px;
+  outline: none;
+  border: none;
 }
 
 .utils__container {
@@ -41,6 +47,7 @@ body {
   align-items: center;
   justify-content: center;
   gap: 2rem;
+  animation: fade-in 10s;
 }
 
 .utils__container small {
@@ -62,6 +69,11 @@ body {
 .utils__container .btn:hover {
   background-color: rgb(199, 199, 199);
   color: black;
+}
+
+.chart__container {
+    animation-delay: 5s;
+    animation: fade-in 2s;
 }
 
 /* HTML: <div class="loader"></div> */
@@ -90,11 +102,32 @@ body {
 /* under 500px */
 @media (max-width: 500px) {
   body {
-    background-color: red;
+    /* background-color: red; */
   }
   .title__span {
     background: none;
     color: black;
     padding: 0px;
   }
+
+  .interval__dropdown,
+.symbol__dropdown {
+  /* width: 200px; */
+  /* padding: 0.5rem 0.5rem; */
+  /* border-radius: 2px; */
+  /* outline: none; */
+  /* border: none; */
+  align-self: center;
+}
+
+}
+
+@keyframes fade-in {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
 }
