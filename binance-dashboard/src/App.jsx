@@ -123,38 +123,42 @@ export default function App() {
       <hr className="divider" />
 
       {/* Dropdown to select cryptocurrency symbol */}
-      <select
-        className="symbol__dropdown"
-        value={selectedSymbol}
-        onChange={handleSymbolChange}
-      >
-        <option className="symbol__option" value="ETHUSDT">
-          ETH/USDT
-        </option>
-        <option className="symbol__option" value="BNBUSDT">
-          BNB/USDT
-        </option>
-        <option className="symbol__option" value="DOTUSDT">
-          DOT/USDT
-        </option>
-      </select>
+      <div className="dropdown__container">
+        <select
+          className="symbol__dropdown"
+          value={selectedSymbol}
+          onChange={handleSymbolChange}
+        >
+          <option className="symbol__option" value="ETHUSDT">
+            ETH/USDT
+          </option>
+          <option className="symbol__option" value="BNBUSDT">
+            BNB/USDT
+          </option>
+          <option className="symbol__option" value="DOTUSDT">
+            DOT/USDT
+          </option>
+        </select>
 
-      {/* Dropdown to select interval */}
-      <select
-        className="interval__dropdown"
-        value={selectedInterval}
-        onChange={handleIntervalChange}
-      >
-        <option className="interval__option" value="1m">
-          1 Minute
-        </option>
-        <option className="interval__option" value="3m">
-          3 Minutes
-        </option>
-        <option className="interval__option" value="5m">
-          5 Minutes
-        </option>
-      </select>
+        {/* Dropdown to select interval */}
+        <select
+          className="interval__dropdown"
+          value={selectedInterval}
+          onChange={handleIntervalChange}
+        >
+          <option className="interval__option" value="1m">
+            1 Minute
+          </option>
+          <option className="interval__option" value="3m">
+            3 Minutes
+          </option>
+          <option className="interval__option" value="5m">
+            5 Minutes
+          </option>
+        </select>
+
+        <button className="dropdown__btn">Show last 50</button>
+      </div>
 
       {candlestickData &&
         candlestickData[selectedSymbol] &&

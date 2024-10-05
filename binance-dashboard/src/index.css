@@ -9,18 +9,16 @@ body {
   font-family: monospace;
 }
 
-.divider {
-  margin: 10px 0;
-}
 .app__container {
   /* height: calc(100vh - 500px); */
+  max-width: 1080px;
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
-  /* align-items: center; */
-  margin: 1rem;
+  gap: 1rem;
+  margin: 1.5rem 1rem;
   animation: fade-in 2s;
   animation-delay: 1s;
+  text-align: center;
 }
 
 .title__span {
@@ -38,7 +36,9 @@ body {
   padding: 0.5rem 0.5rem;
   border-radius: 2px;
   outline: none;
-  border: none;
+  /* border: none; */
+  border: 1px solid gainsboro;
+
 }
 
 .utils__container {
