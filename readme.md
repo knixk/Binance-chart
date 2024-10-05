@@ -1,6 +1,6 @@
 kanishk shrivastava,
 
-deployed at:
+deployed at: https://binance-chart-kanishk.netlify.app/
 
 Candlesticks chart using react-google-charts
 This project uses React Vite.
