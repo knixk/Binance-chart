@@ -159,7 +159,7 @@ export default function App() {
         </select>
 
         <button
-          className="dropdown__btn"
+          className="hide__btn"
           onClick={() => setShowChart((prev) => !prev)}
         >
           {showChart ? "Hide Chart" : "Show Chart"}
