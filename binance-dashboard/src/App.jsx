@@ -3,14 +3,13 @@ import { Chart } from "react-google-charts";
 
 function getCurrentTimeString() {
   const now = new Date();
-  // let hours = now.getHours();
-  // const minutes = String(now.getMinutes()).padStart(2, "0");
-  // const seconds = String(now.getSeconds()).padStart(2, "0");
+  let hours = now.getHours();
+  const minutes = String(now.getMinutes()).padStart(2, "0");
+  const seconds = String(now.getSeconds()).padStart(2, "0");
 
-  // const ampm = hours >= 12 ? "PM" : "AM";
-  // hours = hours % 12 || 12; // Convert to 12-hour format
-  // return `${hours}:${minutes}:${seconds} ${ampm}`;
-  return now;
+  const ampm = hours >= 12 ? "pm" : "am";
+  hours = hours % 12 || 12; // Convert to 12-hour format
+  return `${hours}h: ${minutes}m: ${seconds}s ${ampm}`;
 }
 
 const options = {
@@ -124,7 +123,7 @@ export default function App() {
 
   return (
     <div className="app__container">
-      <h1 className="title">Real-Time {selectedSymbol} Candlestick Chart</h1>
+      <h1 className="title">Real-Time <span className="title__span">{selectedSymbol}</span> Candlestick Chart</h1>
       <small>(by kanishk shrivastava: shrivastavakanishk3@gmail.com)</small>
       <hr className="divider" />
 
@@ -164,7 +163,8 @@ export default function App() {
 
       {candlestickData &&
         candlestickData[selectedSymbol] &&
-        candlestickData[selectedSymbol][selectedInterval] && (candlestickData[selectedSymbol][selectedInterval].length >= 2) && (
+        candlestickData[selectedSymbol][selectedInterval] &&
+        candlestickData[selectedSymbol][selectedInterval].length >= 2 && (
           <div className="chart__container">
             <Chart
               className="chart"
@@ -175,7 +175,7 @@ export default function App() {
               options={options}
             />
             <div className="utils__container">
-              <small>Showing only 100 candlesticks at a time</small>
+              <small>Clear cache if slow</small>
               <button
                 onClick={() => {
                   localStorage.removeItem("candlestickData");
@@ -188,7 +188,12 @@ export default function App() {
             </div>
           </div>
         )}
-        
+
+      {candlestickData &&
+        candlestickData[selectedSymbol] &&
+        candlestickData[selectedSymbol][selectedInterval] &&
+        candlestickData[selectedSymbol][selectedInterval].length < 2 && <div className="loader"></div>}
+
       {/* (
         <div className="loader"></div>
       ) */}

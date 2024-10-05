@@ -21,7 +21,16 @@ body {
   margin: 1rem;
 }
 
-.interval__dropdown, .symbol__dropdown {
+.title__span {
+  background-color: #25b09b;
+  color: white;
+  padding: 0.2rem 1rem;
+  border-radius: 4px;
+  /* border-bottom: 4px solid plum; */
+}
+
+.interval__dropdown,
+.symbol__dropdown {
   width: 200px;
   padding: 0.5rem 0.5rem;
 }
@@ -60,8 +69,6 @@ body {
   position: absolute;
   top: 45%;
   left: 45%;
-  /* transform: translateY(-25%); */
-  /* transform: translateX(-25%); */
   width: 50px;
   padding: 8px;
   aspect-ratio: 1;
@@ -77,5 +84,17 @@ body {
 @keyframes l3 {
   to {
     transform: rotate(1turn);
+  }
+}
+
+/* under 500px */
+@media (max-width: 500px) {
+  body {
+    background-color: red;
+  }
+  .title__span {
+    background: none;
+    color: black;
+    padding: 0px;
   }
 }
