@@ -22,17 +22,34 @@ const options = {
 };
 
 export default function App() {
-  // Consolidate all candlestick data into a single state object
+  // State for each interval and each cryptocurrency
   const [candlestickData, setCandlestickData] = useState({
-    "1m": [["Time", "low", "open", "close", "high"]],
-    "3m": [["Time", "low", "open", "close", "high"]],
-    "5m": [["Time", "low", "open", "close", "high"]],
+    ETHUSDT: {
+      "1m": [["Time", "low", "open", "close", "high"]],
+      "3m": [["Time", "low", "open", "close", "high"]],
+      "5m": [["Time", "low", "open", "close", "high"]],
+    },
+    BNBUSDT: {
+      "1m": [["Time", "low", "open", "close", "high"]],
+      "3m": [["Time", "low", "open", "close", "high"]],
+      "5m": [["Time", "low", "open", "close", "high"]],
+    },
+    DOTUSDT: {
+      "1m": [["Time", "low", "open", "close", "high"]],
+      "3m": [["Time", "low", "open", "close", "high"]],
+      "5m": [["Time", "low", "open", "close", "high"]],
+    },
   });
 
   const [selectedInterval, setSelectedInterval] = useState("1m"); // Default interval to 1 minute
+  const [selectedSymbol, setSelectedSymbol] = useState("ETHUSDT"); // Default cryptocurrency
 
   const handleIntervalChange = (e) => {
     setSelectedInterval(e.target.value);
+  };
+
+  const handleSymbolChange = (e) => {
+    setSelectedSymbol(e.target.value);
   };
 
   useEffect(() => {
@@ -44,8 +61,9 @@ export default function App() {
 
     let count = 0;
 
+    // Create a new WebSocket connection based on selected symbol and interval
     const ws = new WebSocket(
-      `wss://stream.binance.com:9443/ws/ethusdt@kline_${selectedInterval}`
+      `wss://stream.binance.com:9443/ws/${selectedSymbol.toLowerCase()}@kline_${selectedInterval}`
     );
 
     ws.onopen = () => {
@@ -71,11 +89,17 @@ export default function App() {
           parseFloat(h), // High
         ];
 
-        // Update the state for the selected interval only
+        // Update the state for the selected symbol and interval
         setCandlestickData((prevData) => {
           const updatedData = {
             ...prevData,
-            [selectedInterval]: [...prevData[selectedInterval], newCandle],
+            [selectedSymbol]: {
+              ...prevData[selectedSymbol],
+              [selectedInterval]: [
+                ...prevData[selectedSymbol][selectedInterval],
+                newCandle,
+              ],
+            },
           };
 
           // Save updated data to local storage
@@ -94,13 +118,31 @@ export default function App() {
       ws.close();
       console.log("WebSocket closed");
     };
-  }, [selectedInterval]);
+  }, [selectedInterval, selectedSymbol]); // Add selectedSymbol to the dependencies
 
   return (
     <div className="app__container">
-      <h1 className="title">Real-Time ETH/USDT Candlestick Chart</h1>
+      <h1 className="title">Real-Time {selectedSymbol} Candlestick Chart</h1>
       <small>(by kanishk shrivastava: shrivastavakanishk3@gmail.com)</small>
       <hr className="divider" />
+
+      {/* Dropdown to select cryptocurrency symbol */}
+      <select
+        className="symbol__dropdown"
+        value={selectedSymbol}
+        onChange={handleSymbolChange}
+      >
+        <option className="symbol__option" value="ETHUSDT">
+          ETH/USDT
+        </option>
+        <option className="symbol__option" value="BNBUSDT">
+          BNB/USDT
+        </option>
+        <option className="symbol__option" value="DOTUSDT">
+          DOT/USDT
+        </option>
+      </select>
+
       {/* Dropdown to select interval */}
       <select
         className="interval__dropdown"
@@ -118,32 +160,36 @@ export default function App() {
         </option>
       </select>
 
-      {candlestickData[selectedInterval].length > 1 ? (
-        <div className="chart__container">
-          <Chart
-            className="chart"
-            chartType="CandlestickChart"
-            width="100%"
-            height="300px"
-            data={candlestickData[selectedInterval]}
-            options={options}
-          />
-          <div className="utils__container">
-            <small>Showing only 100 candlesticks at a time</small>
-            <button
-              onClick={() => {
-                localStorage.removeItem("candlestickData");
-                window.location.reload();
-              }}
-              className="btn"
-            >
-              Clear cache
-            </button>
+      {candlestickData &&
+        candlestickData[selectedSymbol] &&
+        candlestickData[selectedSymbol][selectedInterval](
+          <div className="chart__container">
+            <Chart
+              className="chart"
+              chartType="CandlestickChart"
+              width="100%"
+              height="300px"
+              data={candlestickData[selectedSymbol][selectedInterval]}
+              options={options}
+            />
+            <div className="utils__container">
+              <small>Showing only 100 candlesticks at a time</small>
+              <button
+                onClick={() => {
+                  localStorage.removeItem("candlestickData");
+                  window.location.reload();
+                }}
+                className="btn"
+              >
+                Clear cache
+              </button>
+            </div>
           </div>
-        </div>
-      ) : (
+        )}
+
+      {/* (
         <div className="loader"></div>
-      )}
+      ) */}
     </div>
   );
 }
