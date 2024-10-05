@@ -25,19 +25,19 @@ export default function App() {
   // State for each interval and each cryptocurrency
   const [candlestickData, setCandlestickData] = useState({
     ETHUSDT: {
-      "1m": [["Time", "low", "open", "close", "high"]],
-      "3m": [["Time", "low", "open", "close", "high"]],
-      "5m": [["Time", "low", "open", "close", "high"]],
+      "1m": [[0, 0, 0, 0, 0]],
+      "3m": [[0, 0, 0, 0, 0]],
+      "5m": [[0, 0, 0, 0, 0]],
     },
     BNBUSDT: {
-      "1m": [["Time", "low", "open", "close", "high"]],
-      "3m": [["Time", "low", "open", "close", "high"]],
-      "5m": [["Time", "low", "open", "close", "high"]],
+      "1m": [[0, 0, 0, 0, 0]],
+      "3m": [[0, 0, 0, 0, 0]],
+      "5m": [[0, 0, 0, 0, 0]],
     },
     DOTUSDT: {
-      "1m": [["Time", "low", "open", "close", "high"]],
-      "3m": [["Time", "low", "open", "close", "high"]],
-      "5m": [["Time", "low", "open", "close", "high"]],
+      "1m": [[0, 0, 0, 0, 0]],
+      "3m": [[0, 0, 0, 0, 0]],
+      "5m": [[0, 0, 0, 0, 0]],
     },
   });
 
@@ -162,7 +162,7 @@ export default function App() {
 
       {candlestickData &&
         candlestickData[selectedSymbol] &&
-        candlestickData[selectedSymbol][selectedInterval](
+        candlestickData[selectedSymbol][selectedInterval] && (
           <div className="chart__container">
             <Chart
               className="chart"
