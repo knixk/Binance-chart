@@ -3,13 +3,14 @@ import { Chart } from "react-google-charts";
 
 function getCurrentTimeString() {
   const now = new Date();
-  let hours = now.getHours();
-  const minutes = String(now.getMinutes()).padStart(2, "0");
-  const seconds = String(now.getSeconds()).padStart(2, "0");
+  // let hours = now.getHours();
+  // const minutes = String(now.getMinutes()).padStart(2, "0");
+  // const seconds = String(now.getSeconds()).padStart(2, "0");
 
-  const ampm = hours >= 12 ? "PM" : "AM";
-  hours = hours % 12 || 12; // Convert to 12-hour format
-  return `${hours}:${minutes}:${seconds} ${ampm}`;
+  // const ampm = hours >= 12 ? "PM" : "AM";
+  // hours = hours % 12 || 12; // Convert to 12-hour format
+  // return `${hours}:${minutes}:${seconds} ${ampm}`;
+  return now;
 }
 
 const options = {
@@ -78,11 +79,12 @@ export default function App() {
       }
 
       if (data.k) {
-        const { t, o, h, l, c } = data.k; // Extract open, high, low, close
+        const { o, h, l, c } = data.k; // Extract open, high, low, close
         count++;
 
         const newCandle = [
-          t, // Time
+          // getCurrentTimeString(),
+          getCurrentTimeString(),
           parseFloat(l), // Low
           parseFloat(o), // Open
           parseFloat(c), // Close
@@ -118,7 +120,7 @@ export default function App() {
       ws.close();
       console.log("WebSocket closed");
     };
-  }, [selectedInterval, selectedSymbol]); // Add selectedSymbol to the dependencies
+  }, [selectedInterval, selectedSymbol]); // Add selectedSymbol to the dpendencies
 
   return (
     <div className="app__container">
@@ -162,7 +164,7 @@ export default function App() {
 
       {candlestickData &&
         candlestickData[selectedSymbol] &&
-        candlestickData[selectedSymbol][selectedInterval] && (
+        candlestickData[selectedSymbol][selectedInterval] && (candlestickData[selectedSymbol][selectedInterval].length >= 2) && (
           <div className="chart__container">
             <Chart
               className="chart"
@@ -186,7 +188,7 @@ export default function App() {
             </div>
           </div>
         )}
-
+        
       {/* (
         <div className="loader"></div>
       ) */}
