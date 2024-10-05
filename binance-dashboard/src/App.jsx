@@ -25,19 +25,19 @@ export default function App() {
   // State for each interval and each cryptocurrency
   const [candlestickData, setCandlestickData] = useState({
     ETHUSDT: {
-      "1m": [[0, 0, 0, 0, 0]],
-      "3m": [[0, 0, 0, 0, 0]],
-      "5m": [[0, 0, 0, 0, 0]],
+      "1m": [["Time", "low", "open", "close", "high"]],
+      "3m": [["Time", "low", "open", "close", "high"]],
+      "5m": [["Time", "low", "open", "close", "high"]],
     },
     BNBUSDT: {
-      "1m": [[0, 0, 0, 0, 0]],
-      "3m": [[0, 0, 0, 0, 0]],
-      "5m": [[0, 0, 0, 0, 0]],
+      "1m": [["Time", "low", "open", "close", "high"]],
+      "3m": [["Time", "low", "open", "close", "high"]],
+      "5m": [["Time", "low", "open", "close", "high"]],
     },
     DOTUSDT: {
-      "1m": [[0, 0, 0, 0, 0]],
-      "3m": [[0, 0, 0, 0, 0]],
-      "5m": [[0, 0, 0, 0, 0]],
+      "1m": [["Time", "low", "open", "close", "high"]],
+      "3m": [["Time", "low", "open", "close", "high"]],
+      "5m": [["Time", "low", "open", "close", "high"]],
     },
   });
 
@@ -78,11 +78,11 @@ export default function App() {
       }
 
       if (data.k) {
-        const { o, h, l, c } = data.k; // Extract open, high, low, close
+        const { t, o, h, l, c } = data.k; // Extract open, high, low, close
         count++;
 
         const newCandle = [
-          getCurrentTimeString(), // Time
+          t, // Time
           parseFloat(l), // Low
           parseFloat(o), // Open
           parseFloat(c), // Close
