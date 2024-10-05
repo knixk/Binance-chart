@@ -100,6 +100,7 @@ export default function App() {
     <div className="app__container">
       <h1 className="title">Real-Time ETH/USDT Candlestick Chart</h1>
       <small>(by kanishk shrivastava: shrivastavakanishk3@gmail.com)</small>
+      <hr className="divider" />
       {/* Dropdown to select interval */}
       <select
         className="interval__dropdown"
@@ -123,12 +124,12 @@ export default function App() {
             className="chart"
             chartType="CandlestickChart"
             width="100%"
-            height="400px"
+            height="300px"
             data={candlestickData[selectedInterval]}
             options={options}
           />
           <div className="utils__container">
-            <small>Showing only 50 candlesticks at a time</small>
+            <small>Showing only 100 candlesticks at a time</small>
             <button
               onClick={() => {
                 localStorage.removeItem("candlestickData");
