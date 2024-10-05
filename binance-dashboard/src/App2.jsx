@@ -1,134 +1,134 @@
-// import { useEffect, useState } from "react";
-// import { Chart, registerables } from "chart.js";
-// import { Chart as ReactChart } from "react-chartjs-2";
-// import "chartjs-chart-financial";
-// import {
-//   CandlestickController,
-//   CandlestickElement,
-// } from "chartjs-chart-financial";
-// import "chartjs-adapter-date-fns";
+import { useEffect, useState } from "react";
+import { Chart, registerables } from "chart.js";
+import { Chart as ReactChart } from "react-chartjs-2";
+import "chartjs-chart-financial";
+import {
+  CandlestickController,
+  CandlestickElement,
+} from "chartjs-chart-financial";
+import "chartjs-adapter-date-fns";
 
-// Chart.register(...registerables);
-// Chart.register(CandlestickElement, CandlestickController);
+Chart.register(...registerables);
+Chart.register(CandlestickElement, CandlestickController);
 
-// const App = () => {
-//   const [symbol, setSymbol] = useState("ethusdt");
-//   const [interval, setInterval] = useState("1m");
-//   const [candlestickData, setCandlestickData] = useState({});
-//   const [currentData, setCurrentData] = useState([]);
+const App = () => {
+  const [symbol, setSymbol] = useState("ethusdt");
+  const [interval, setInterval] = useState("1m");
+  const [candlestickData, setCandlestickData] = useState({});
+  const [currentData, setCurrentData] = useState([]);
 
-//   // Handle symbol change
-//   const handleSymbolChange = (event) => {
-//     const newSymbol = event.target.value;
-//     setSymbol(newSymbol);
+  // Handle symbol change
+  const handleSymbolChange = (event) => {
+    const newSymbol = event.target.value;
+    setSymbol(newSymbol);
 
-//     // Check if there's cached data for the new symbol
-//     if (candlestickData[newSymbol]) {
-//       setCurrentData(candlestickData[newSymbol]);
-//     } else {
-//       setCurrentData([]);
-//     }
-//   };
+    // Check if there's cached data for the new symbol
+    if (candlestickData[newSymbol]) {
+      setCurrentData(candlestickData[newSymbol]);
+    } else {
+      setCurrentData([]);
+    }
+  };
 
-//   // Handle interval change
-//   const handleIntervalChange = (event) => {
-//     setInterval(event.target.value);
-//   };
+  // Handle interval change
+  const handleIntervalChange = (event) => {
+    setInterval(event.target.value);
+  };
 
-//   // WebSocket for Binance data
-//   useEffect(() => {
-//     const ws = new WebSocket(
-//       `wss://stream.binance.com:9443/ws/${symbol}@kline_${interval}`
-//     );
+  // WebSocket for Binance data
+  useEffect(() => {
+    const ws = new WebSocket(
+      `wss://stream.binance.com:9443/ws/${symbol}@kline_${interval}`
+    );
 
-//     ws.onmessage = (event) => {
-//       const data = JSON.parse(event.data);
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
 
-//       console.log(data)
-//       // Add only closed candles to avoid overlap
-//       if (data.k && data.k.x) {
-//         const { t, o, h, l, c } = data.k;
-//         const newCandle = {
-//           x: new Date(t),
-//           o: parseFloat(o),
-//           h: parseFloat(h),
-//           l: parseFloat(l),
-//           c: parseFloat(c),
-//         };
+      console.log(data)
+      // Add only closed candles to avoid overlap
+      if (data.k && data.k.x) {
+        const { t, o, h, l, c } = data.k;
+        const newCandle = {
+          x: new Date(t),
+          o: parseFloat(o),
+          h: parseFloat(h),
+          l: parseFloat(l),
+          c: parseFloat(c),
+        };
 
-//         setCurrentData((prevData) => {
-//           const updatedData = [...prevData, newCandle];
+        setCurrentData((prevData) => {
+          const updatedData = [...prevData, newCandle];
 
-//           // Cache data in-memory
-//           setCandlestickData((prevCache) => ({
-//             ...prevCache,
-//             [symbol]: updatedData,
-//           }));
+          // Cache data in-memory
+          setCandlestickData((prevCache) => ({
+            ...prevCache,
+            [symbol]: updatedData,
+          }));
 
-//           return updatedData;
-//         });
-//       }
-//     };
+          return updatedData;
+        });
+      }
+    };
 
-//     return () => {
-//       ws.close();
-//     };
-//   }, [symbol, interval]);
+    return () => {
+      ws.close();
+    };
+  }, [symbol, interval]);
 
-//   // On page load, restore cached data from localStorage
-//   useEffect(() => {
-//     const savedData = localStorage.getItem(symbol);
-//     if (savedData) {
-//       setCurrentData(JSON.parse(savedData));
-//     }
-//   }, [symbol]);
+  // On page load, restore cached data from localStorage
+  useEffect(() => {
+    const savedData = localStorage.getItem(symbol);
+    if (savedData) {
+      setCurrentData(JSON.parse(savedData));
+    }
+  }, [symbol]);
 
-//   // Chart.js candlestick data setup
-//   const chartData = {
-//     datasets: [
-//       {
-//         label: `${symbol.toUpperCase()} Candlestick Data`,
-//         data: currentData,
-//         type: "candlestick",
-//         borderColor: "#000000",
-//         color: {
-//           up: "#00ff00",
-//           down: "#ff0000",
-//           unchanged: "#0000ff",
-//         },
-//       },
-//     ],
-//   };
+  // Chart.js candlestick data setup
+  const chartData = {
+    datasets: [
+      {
+        label: `${symbol.toUpperCase()} Candlestick Data`,
+        data: currentData,
+        type: "candlestick",
+        borderColor: "#000000",
+        color: {
+          up: "#00ff00",
+          down: "#ff0000",
+          unchanged: "#0000ff",
+        },
+      },
+    ],
+  };
 
-//   const chartOptions = {
-//     responsive: true,
-//     scales: {
-//       x: {
-//         type: "time",
-//         time: {
-//           unit: "minute",
-//         },
-//       },
-//       y: {
-//         beginAtZero: false,
-//       },
-//     },
-//   };
+  const chartOptions = {
+    responsive: true,
+    scales: {
+      x: {
+        type: "time",
+        time: {
+          unit: "minute",
+        },
+      },
+      y: {
+        beginAtZero: false,
+      },
+    },
+  };
 
-//   return (
-//     <div>
-//       <h1>Binance Market Data - Candlestick Chart</h1>
+  return (
+    <div>
+      <h1>Binance Market Data - Candlestick Chart</h1>
 
-//       {/* Dropdown to select cryptocurrency */}
-//       <select onChange={handleSymbolChange} value={symbol}>
-//         <option value="ethusdt">ETH/USDT</option>
-//         <option value="bnbusdt">BNB/USDT</option>
-//         <option value="dotusdt">DOT/USDT</option>
-//       </select>
+      {/* Dropdown to select cryptocurrency */}
+      <select onChange={handleSymbolChange} value={symbol}>
+        <option value="ethusdt">ETH/USDT</option>
+        <option value="bnbusdt">BNB/USDT</option>
+        <option value="dotusdt">DOT/USDT</option>
+      </select>
 
-//       {/* Dropdown to select interval */}
-//       <select onChange={handleIntervalChange} value={interval}>
-//         <option value="1m">1 Minute</option>
+      {/* Dropdown to select interval */}
+      <select onChange={handleIntervalChange} value={interval}>
+        <option value="1m">1 Minute</option>
 //         <option value="3m">3 Minutes</option>
 //         <option value="5m">5 Minutes</option>
 //       </select>

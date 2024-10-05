@@ -1,59 +1,8 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import { Chart } from "react-google-charts";
 
-const data2 = [
   {
-    x: "2024-10-05T05:51:00.000Z",
-    o: 2417.29,
-    h: 2417.37,
-    l: 2416.89,
-    c: 2416.89,
-  },
-  {
-    x: "2024-10-05T05:51:00.000Z",
-    o: 2417.29,
-    h: 2417.37,
-    l: 2416.89,
-    c: 2416.89,
-  },
-  {
-    x: "2024-10-05T05:51:00.000Z",
-    o: 2417.29,
-    h: 2417.37,
-    l: 2416.8,
-    c: 2416.81,
-  },
-  {
-    x: "2024-10-05T05:51:00.000Z",
-    o: 2417.29,
-    h: 2417.37,
-    l: 2416.8,
-    c: 2416.81,
-  },
-  {
-    x: "2024-10-05T05:51:00.000Z",
-    o: 2417.29,
-    h: 2417.37,
-    l: 2416.8,
-    c: 2416.8,
-  },
-  {
-    x: "2024-10-05T05:51:00.000Z",
-    o: 2417.29,
-    h: 2417.37,
-    l: 2416.8,
-    c: 2416.8,
-  },
-  {
-    x: "2024-10-05T05:51:00.000Z",
-    o: 2417.29,
-    h: 2417.37,
-    l: 2416.8,
-    c: 2416.8,
-  },
-];
-
-export const data = [
+const data = [
   ["Day", "", "", "", ""],
   ["Mon", 20, 28, 38, 45],
   ["Tue", 31, 38, 55, 66],
@@ -63,48 +12,101 @@ export const data = [
   // t, l, o, c, h,
 ];
 
-const data3 = [
-  [
-    ["Date", "", "", "", ""],
-    ["Mon", 2416.89, 2417.29, 2416.89, 2417.37],
-    ["Tue", 2416.8, 2417.29, 2416.81, 2417.37],
-  ],
-];
-
-export const options = {
+const options = {
   legend: "none",
-  bar: { groupWidth: "100%" }, // Remove space between bars.
+  bar: { groupWidth: "40px" }, // Remove space between bars.
   candlestick: {
     fallingColor: { strokeWidth: 0, fill: "#a52714" }, // red
     risingColor: { strokeWidth: 0, fill: "#0f9d58" }, // green
   },
 };
 
-function convertDataToArrOfArr(data) {
-  // let counter = 1;
-  // let day = new Date.d
-  const newData = data.map((i) => {
-    // don't get the date from old data
-    const { x, o, h, l, c } = i;
-    // let x = counter.toString();
-    const nf = [x, l, o, c, h];
-    // counter++;
-    return nf;
-  });
-
-  return newData;
-}
-
 export default function App() {
-  let newData = convertDataToArrOfArr(data2);
-  console.log(newData);
+  // Initial state for candlestick chart data
+  const [candlestickData, setCandlestickData] = useState([
+    ["Day", "", "", "", ""], // Header for chart
+  ]);
+
+  let count = 0;
+
+  console.log(candlestickData);
+  useEffect(() => {
+    const ws = new WebSocket(
+      "wss://stream.binance.com:9443/ws/ethusdt@kline_1m"
+    );
+
+    ws.onopen = () => {
+      console.log("WebSocket connected");
+    };
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+
+      if (count > 5) {
+        ws.close();
+      }
+      // Extracting kline (candlestick) data from the WebSocket message
+      if (data.k) {
+        const { t, o, h, l, c } = data.k; // time, open, high, low, close
+
+        count++;
+        // Format the new candlestick data
+        const newCandle = [
+          "Mon", // Use timestamp directly as numeric value
+          parseFloat(l), // Low
+          parseFloat(o), // Open
+          parseFloat(c), // Close
+          parseFloat(h), // High
+        ];
+
+        // Log the new candle for debugging
+        console.log("New Candle:", newCandle);
+
+        // Update the state with new candlestick data
+        setCandlestickData((prevData) => {
+          // Check if new candle already exists
+          return [...prevData, newCandle]; // Add new candle if it doesn't exist
+        });
+      }
+    };
+
+    ws.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+
+    // Cleanup WebSocket connection on component unmount
+    return () => {
+      ws.close();
+      console.log("WebSocket closed");
+    };
+  }, []);
+
   return (
-    <Chart
-      chartType="CandlestickChart"
-      width="100%"
-      height="400px"
-      data={data}
-      options={options}
-    />
+    <div>
+      <h1>Real-Time ETH/USDT Candlestick Chart</h1>
+      {/* <Chart
+        width={"600px"}
+        height={"400px"}
+        chartType="CandlestickChart"
+        loader={<div>Loading Chart...</div>}
+        data={candlestickData}
+        options={{
+          legend: "none",
+          bar: { groupWidth: "100%" }, // Make the candles thinner
+          candlestick: {
+            fallingColor: { strokeWidth: 0, fill: "#a52714" }, // Red for decreasing values
+            risingColor: { strokeWidth: 0, fill: "#0f9d58" },  // Green for increasing values
+          },
+          chartArea: { width: "80%", height: "80%" },
+        }}
+      /> */}
+      <Chart
+        chartType="CandlestickChart"
+        width="80%"
+        height="400px"
+        data={candlestickData}
+        options={options}
+      />
+    </div>
   );
 }
