@@ -8,13 +8,13 @@ function getCurrentTimeString() {
   const seconds = String(now.getSeconds()).padStart(2, "0");
 
   const ampm = hours >= 12 ? "pm" : "am";
-  hours = hours % 12 || 12; // Convert to 12-hour format
+  hours = hours % 12 || 12;
   return `${hours}h: ${minutes}m: ${seconds}s ${ampm}`;
 }
 
 const options = {
   legend: "none",
-  bar: { groupWidth: "40px" }, // Adjust space between bars
+  bar: { groupWidth: "40px" },
   candlestick: {
     fallingColor: { strokeWidth: 0, fill: "#a52714" }, // red
     risingColor: { strokeWidth: 0, fill: "#0f9d58" }, // green
@@ -41,8 +41,9 @@ export default function App() {
     },
   });
 
-  const [selectedInterval, setSelectedInterval] = useState("1m"); // Default interval to 1 minute
-  const [selectedSymbol, setSelectedSymbol] = useState("ETHUSDT"); // Default cryptocurrency
+  const [selectedInterval, setSelectedInterval] = useState("1m");
+  const [selectedSymbol, setSelectedSymbol] = useState("ETHUSDT");
+  const [showChart, setShowChart] = useState(true);
 
   const handleIntervalChange = (e) => {
     setSelectedInterval(e.target.value);
@@ -74,7 +75,6 @@ export default function App() {
       if (data.k) {
         const { o, h, l, c } = data.k; // Extract open, high, low, close
         const newCandle = [
-          // getCurrentTimeString(),
           getCurrentTimeString(),
           parseFloat(l), // Low
           parseFloat(o), // Open
@@ -108,6 +108,7 @@ export default function App() {
     };
 
     return () => {
+      // close the connection when mounting out
       ws.close();
       console.log("WebSocket closed");
     };
@@ -157,10 +158,16 @@ export default function App() {
           </option>
         </select>
 
-        <button className="dropdown__btn">Show last 50</button>
+        <button
+          className="dropdown__btn"
+          onClick={() => setShowChart((prev) => !prev)}
+        >
+          {showChart ? "Hide Chart" : "Show Chart"}
+        </button>
       </div>
 
       {candlestickData &&
+        showChart &&
         candlestickData[selectedSymbol] &&
         candlestickData[selectedSymbol][selectedInterval] &&
         candlestickData[selectedSymbol][selectedInterval].length >= 2 && (
@@ -194,10 +201,6 @@ export default function App() {
         candlestickData[selectedSymbol][selectedInterval].length < 2 && (
           <div className="loader"></div>
         )}
-
-      {/* (
-        <div className="loader"></div>
-      ) */}
     </div>
   );
 }
