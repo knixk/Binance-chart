@@ -29,7 +29,6 @@ body {
   /* border-bottom: 4px solid plum; */
 }
 
-
 .interval__dropdown,
 .symbol__dropdown {
   width: 200px;
@@ -38,7 +37,6 @@ body {
   outline: none;
   /* border: none; */
   border: 1px solid gainsboro;
-
 }
 
 .utils__container {
@@ -66,15 +64,32 @@ body {
   transition: 0.2s;
 }
 
-.utils__container .btn:hover {
+.utils__container .btn:hover,
+.dropdown__btn:hover {
   background-color: rgb(199, 199, 199);
   color: black;
 }
 
 .chart__container {
-    animation-delay: 5s;
-    animation: fade-in 2s;
+  animation-delay: 5s;
+  animation: fade-in 2s;
 }
+
+.dropdown__btn {
+  /* background-color: red; */
+  height: 35px;
+  padding: 0 1rem;
+  border-radius: 4px;
+  border: none;
+  outline: none;
+  transition: 0.2s;
+
+  /* height: 4rem 1rem; */
+}
+
+/* .dropdown__btn:hover {
+
+} */
 
 /* HTML: <div class="loader"></div> */
 .loader {
@@ -111,23 +126,54 @@ body {
   }
 
   .interval__dropdown,
-.symbol__dropdown {
-  /* width: 200px; */
-  /* padding: 0.5rem 0.5rem; */
-  /* border-radius: 2px; */
-  /* outline: none; */
-  /* border: none; */
-  align-self: center;
+  .symbol__dropdown {
+    align-self: center;
+    animation: fade-in 2s;
+  }
 }
 
+@media (max-width: 591px) {
+  .title__span {
+    background: none;
+    color: black;
+    padding: 0px;
+  }
+
+  .interval__dropdown,
+  .symbol__dropdown {
+    align-self: center;
+    animation: fade-in 2s;
+  }
+
+  .title {
+    font-size: 20px;
+  }
+}
+
+
+.dropdown__container {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+@media (max-width: 560px) {
+    .dropdown__container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .dropdown__btn {
+        width: 200px;
+    }
 }
 
 @keyframes fade-in {
-    0% {
-        opacity: 0;
-    }
+  0% {
+    opacity: 0;
+  }
 
-    100% {
-        opacity: 1;
-    }
+  100% {
+    opacity: 1;
+  }
 }
