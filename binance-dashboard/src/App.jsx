@@ -1,114 +1,110 @@
-import React, { useEffect, useState } from 'react';
-import { Chart, registerables } from 'chart.js';
-import { Chart as ReactChart } from 'react-chartjs-2';
-import 'chartjs-chart-financial';
+import React from "react";
+import { Chart } from "react-google-charts";
 
-// Register financial chart for candlestick
-import { CandlestickController, CandlestickElement } from 'chartjs-chart-financial';
-import 'chartjs-adapter-date-fns';
+const data2 = [
+  {
+    x: "2024-10-05T05:51:00.000Z",
+    o: 2417.29,
+    h: 2417.37,
+    l: 2416.89,
+    c: 2416.89,
+  },
+  {
+    x: "2024-10-05T05:51:00.000Z",
+    o: 2417.29,
+    h: 2417.37,
+    l: 2416.89,
+    c: 2416.89,
+  },
+  {
+    x: "2024-10-05T05:51:00.000Z",
+    o: 2417.29,
+    h: 2417.37,
+    l: 2416.8,
+    c: 2416.81,
+  },
+  {
+    x: "2024-10-05T05:51:00.000Z",
+    o: 2417.29,
+    h: 2417.37,
+    l: 2416.8,
+    c: 2416.81,
+  },
+  {
+    x: "2024-10-05T05:51:00.000Z",
+    o: 2417.29,
+    h: 2417.37,
+    l: 2416.8,
+    c: 2416.8,
+  },
+  {
+    x: "2024-10-05T05:51:00.000Z",
+    o: 2417.29,
+    h: 2417.37,
+    l: 2416.8,
+    c: 2416.8,
+  },
+  {
+    x: "2024-10-05T05:51:00.000Z",
+    o: 2417.29,
+    h: 2417.37,
+    l: 2416.8,
+    c: 2416.8,
+  },
+];
 
-Chart.register(...registerables);
-Chart.register(CandlestickElement, CandlestickController)
+export const data = [
+  ["Day", "", "", "", ""],
+  ["Mon", 20, 28, 38, 45],
+  ["Tue", 31, 38, 55, 66],
+  ["Wed", 50, 55, 77, 80],
+  ["Thu", 77, 77, 66, 50],
+  ["Fri", 68, 66, 22, 15],
+  // t, l, o, c, h,
+];
 
-const App = () => {
-  const [symbol, setSymbol] = useState('ethusdt');
-  const [interval, setInterval] = useState('1m');
-  const [candlestickData, setCandlestickData] = useState({});
+const data3 = [
+  [
+    ["Date", "", "", "", ""],
+    ["Mon", 2416.89, 2417.29, 2416.89, 2417.37],
+    ["Tue", 2416.8, 2417.29, 2416.81, 2417.37],
+  ],
+];
 
-  // Fetch historical data from Binance WebSocket
-  useEffect(() => {
-    const storedData = localStorage.getItem(symbol);
-    if (storedData) {
-      setCandlestickData(JSON.parse(storedData));
-    }
-
-    const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol}@kline_${interval}`);
-
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log(data)
-      if (data.k) {
-        const { t, o, h, l, c } = data.k;
-        const newCandle = {
-          x: new Date(t),
-          o: parseFloat(o),
-          h: parseFloat(h),
-          l: parseFloat(l),
-          c: parseFloat(c),
-        };
-
-        setCandlestickData((prevData) => {
-          const updatedData = prevData[symbol] ? [...prevData[symbol], newCandle] : [newCandle];
-          localStorage.setItem(symbol, JSON.stringify(updatedData));
-          return { ...prevData, [symbol]: updatedData };
-        });
-      }
-    };
-
-    return () => ws.close();
-  }, [symbol, interval]);
-
-  // Handle symbol change
-  const handleSymbolChange = (e) => {
-    setSymbol(e.target.value);
-  };
-
-  // Handle interval change
-  const handleIntervalChange = (e) => {
-    setInterval(e.target.value);
-  };
-
-  // Chart data and options
-  const chartData = {
-    datasets: [
-      {
-        label: `${symbol.toUpperCase()} Candlestick Data`,
-        data: candlestickData[symbol] || [],
-        type: 'candlestick',
-        borderColor: '#000',
-        backgroundColor: 'rgba(0, 0, 0, 0.1)',
-      },
-    ],
-  };
-
-  const chartOptions = {
-    scales: {
-      x: {
-        type: 'time',
-        time: {
-          unit: 'minute',
-        },
-      },
-      y: {
-        beginAtZero: false,
-      },
-    },
-  };
-
-  return (
-    <div>
-      <h1>Binance Market Data - Candlestick Chart</h1>
-
-      {/* Dropdown to select cryptocurrency */}
-      <select value={symbol} onChange={handleSymbolChange}>
-        <option value="ethusdt">ETH/USDT</option>
-        <option value="bnbusdt">BNB/USDT</option>
-        <option value="dotusdt">DOT/USDT</option>
-      </select>
-
-      {/* Dropdown to select interval */}
-      <select value={interval} onChange={handleIntervalChange}>
-        <option value="1m">1 Minute</option>
-        <option value="3m">3 Minutes</option>
-        <option value="5m">5 Minutes</option>
-      </select>
-
-      {/* Candlestick Chart */}
-      {candlestickData[symbol] && candlestickData[symbol].length > 0 && (
-        <ReactChart type="candlestick" data={chartData} options={chartOptions} />
-      )}
-    </div>
-  );
+export const options = {
+  legend: "none",
+  bar: { groupWidth: "100%" }, // Remove space between bars.
+  candlestick: {
+    fallingColor: { strokeWidth: 0, fill: "#a52714" }, // red
+    risingColor: { strokeWidth: 0, fill: "#0f9d58" }, // green
+  },
 };
 
-export default App;
+function convertDataToArrOfArr(data) {
+  // let counter = 1;
+  // let day = new Date.d
+  const newData = data.map((i) => {
+    // don't get the date from old data
+    const { x, o, h, l, c } = i;
+    // let x = counter.toString();
+    const nf = [x, l, o, c, h];
+    // counter++;
+    return nf;
+  });
+
+  return newData;
+}
+
+export default function App() {
+  let newData = convertDataToArrOfArr(data2);
+  console.log(newData);
+  return (
+    <Chart
+      chartType="CandlestickChart"
+      width="100%"
+      height="400px"
+      data={data}
+      options={options}
+    />
+  );
+}
